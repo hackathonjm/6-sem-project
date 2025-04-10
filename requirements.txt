@@ -3,5 +3,7 @@ pandas
 numpy
 scikit-learn
 nltk
+punkt
+stopwards
 SpeechRecognition
 fpdf
