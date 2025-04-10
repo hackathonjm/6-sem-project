@@ -3,13 +3,10 @@ import nltk
 import os
 import csv
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-import time
 
-# Download required NLTK resources (if not already)
-nltk.download('punkt', quiet=True)
+# Download stopwords only (no punkt)
 nltk.download('stopwords', quiet=True)
 
 class StudentChatBot:
@@ -28,28 +25,22 @@ class StudentChatBot:
             raise FileNotFoundError(f"{dataset_file} not found. Please ensure it's in the directory.")
 
         with open(dataset_file, 'r', encoding='utf-8') as f:
-            try:
-                data = json.load(f)
-            except json.JSONDecodeError:
-                raise ValueError("Error decoding JSON from the dataset file.")
-            
-            for item in data:
-                self.inputs.append(item['input'])
-                self.outputs.append(item['output'])
+            data = json.load(f)
+
+        for item in data:
+            self.inputs.append(item['input'])
+            self.outputs.append(item['output'])
 
     def _preprocess(self, text):
-        """Preprocess text: tokenize, remove punctuation, and stopwords."""
-        tokens = word_tokenize(text.lower())
-        tokens = [word for word in tokens if word.isalnum()]  # Remove punctuation
+        """Preprocess text: lowercase, split by whitespace, remove stopwords and punctuation."""
+        tokens = text.lower().split()  # basic tokenizer, no punkt needed
+        tokens = [word for word in tokens if word.isalnum()]
         stop_words = set(stopwords.words('english'))
         filtered_tokens = [word for word in tokens if word not in stop_words]
         return ' '.join(filtered_tokens)
 
     def _train_model(self):
         """Train TF-IDF + Logistic Regression on the dataset."""
-        if not self.inputs or not self.outputs:
-            raise ValueError("Inputs and outputs are empty. Please ensure the dataset is loaded correctly.")
-
         processed_inputs = [self._preprocess(text) for text in self.inputs]
         X = self.vectorizer.fit_transform(processed_inputs)
         y = self.outputs
@@ -65,22 +56,19 @@ class StudentChatBot:
         return response
 
     def _log_conversation(self, user_input, response):
-        """Log conversations to chat_log.csv with a timestamp."""
+        """Log conversations to chat_log.csv."""
         log_file = 'chat_log.csv'
         file_exists = os.path.isfile(log_file)
-
-        timestamp = time.strftime('%Y-%m-%d %H:%M:%S')  # Current timestamp
 
         with open(log_file, 'a', newline='', encoding='utf-8') as csvfile:
             writer = csv.writer(csvfile)
             if not file_exists:
-                writer.writerow(['Timestamp', 'User Input', 'Chatbot Response'])
-            writer.writerow([timestamp, user_input, response])
+                writer.writerow(['User Input', 'Chatbot Response'])
+            writer.writerow([user_input, response])
 
 # Initialize chatbot instance once
 chatbot = StudentChatBot()
 
 # Function to be imported in app.py
 def get_bot_response(user_input):
-    """Return chatbot's response based on user input."""
     return chatbot.get_response(user_input)
