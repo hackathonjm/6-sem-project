@@ -2,11 +2,12 @@ import json
 import nltk
 import os
 import csv
+import re
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 
-# Download stopwords only (no punkt)
+# Download only stopwords (no punkt needed now)
 nltk.download('stopwords', quiet=True)
 
 class StudentChatBot:
@@ -32,9 +33,11 @@ class StudentChatBot:
             self.outputs.append(item['output'])
 
     def _preprocess(self, text):
-        """Preprocess text: lowercase, split by whitespace, remove stopwords and punctuation."""
-        tokens = text.lower().split()  # basic tokenizer, no punkt needed
-        tokens = [word for word in tokens if word.isalnum()]
+        """Preprocess text: lowercase, remove punctuation, tokenize, remove stopwords."""
+        # Lowercase and remove non-alphanumeric characters
+        text = re.sub(r'[^a-zA-Z0-9\s]', '', text.lower())
+        # Tokenize using simple split
+        tokens = text.split()
         stop_words = set(stopwords.words('english'))
         filtered_tokens = [word for word in tokens if word not in stop_words]
         return ' '.join(filtered_tokens)
@@ -66,7 +69,7 @@ class StudentChatBot:
                 writer.writerow(['User Input', 'Chatbot Response'])
             writer.writerow([user_input, response])
 
-# Initialize chatbot instance once
+# Initialize chatbot instance
 chatbot = StudentChatBot()
 
 # Function to be imported in app.py
