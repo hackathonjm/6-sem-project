@@ -3,7 +3,6 @@ pandas
 numpy
 scikit-learn
 nltk
-punkt
 Tokenizer
 stopwards
 SpeechRecognition
