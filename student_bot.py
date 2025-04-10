@@ -1,29 +1,16 @@
 import json
+import nltk
 import os
 import csv
-import re
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
+import time
 
-# Basic English stopwords list (no NLTK needed)
-BASIC_STOPWORDS = set([
-    "i", "me", "my", "myself", "we", "our", "ours", "ourselves",
-    "you", "your", "yours", "yourself", "yourselves", "he", "him",
-    "his", "himself", "she", "her", "hers", "herself", "it", "its",
-    "itself", "they", "them", "their", "theirs", "themselves", "what",
-    "which", "who", "whom", "this", "that", "these", "those", "am",
-    "is", "are", "was", "were", "be", "been", "being", "have", "has",
-    "had", "having", "do", "does", "did", "doing", "a", "an", "the",
-    "and", "but", "if", "or", "because", "as", "until", "while", "of",
-    "at", "by", "for", "with", "about", "against", "between", "into",
-    "through", "during", "before", "after", "above", "below", "to",
-    "from", "up", "down", "in", "out", "on", "off", "over", "under",
-    "again", "further", "then", "once", "here", "there", "when", "where",
-    "why", "how", "all", "any", "both", "each", "few", "more", "most",
-    "other", "some", "such", "no", "nor", "not", "only", "own", "same",
-    "so", "than", "too", "very", "s", "t", "can", "will", "just", "don",
-    "should", "now"
-])
+# Download required NLTK resources (if not already)
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
 
 class StudentChatBot:
     def __init__(self):
@@ -48,10 +35,11 @@ class StudentChatBot:
             self.outputs.append(item['output'])
 
     def _preprocess(self, text):
-        """Simplified tokenizer without punkt – lowercase, remove punctuation, stopwords."""
-        text = text.lower()
-        tokens = re.findall(r'\b\w+\b', text)  # Matches words only
-        filtered_tokens = [word for word in tokens if word not in BASIC_STOPWORDS]
+        """Preprocess text: tokenize, remove punctuation, and stopwords."""
+        tokens = word_tokenize(text.lower())
+        tokens = [word for word in tokens if word.isalnum()]
+        stop_words = set(stopwords.words('english'))
+        filtered_tokens = [word for word in tokens if word not in stop_words]
         return ' '.join(filtered_tokens)
 
     def _train_model(self):
