@@ -1,0 +1,36 @@
+{
+  "Chat 1": [
+    {
+      "role": "You",
+      "content": "hii"
+    },
+    {
+      "role": "AI",
+      "content": "👽 I'm doing well, thank you!"
+    },
+    {
+      "role": "You",
+      "content": "what are you doing"
+    },
+    {
+      "role": "AI",
+      "content": "👽 I'm doing well, thank you!"
+    },
+    {
+      "role": "You",
+      "content": "what can i askyou"
+    },
+    {
+      "role": "AI",
+      "content": "👽 I'm doing well, thank you!"
+    },
+    {
+      "role": "You",
+      "content": "what can i askyou"
+    },
+    {
+      "role": "AI",
+      "content": "🐱 I'm doing well, thank you!"
+    }
+  ]
+}
