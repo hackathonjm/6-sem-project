@@ -3,7 +3,5 @@ pandas
 numpy
 scikit-learn
 nltk
-Tokenizer
-stopwards
 SpeechRecognition
 fpdf
